@@ -110,36 +110,85 @@ const ChatList: React.FC<ChatListProps> = ({
   };
 
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-        <Typography variant="h6" component="div">
+    <Box
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: { xs: "300px", sm: "auto" },
+      }}
+    >
+      <Box
+        sx={{
+          p: { xs: 1.5, sm: 2 },
+          borderBottom: 1,
+          borderColor: "divider",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+        >
           Chat Rooms
         </Typography>
       </Box>
 
-      <List sx={{ flexGrow: 1, overflow: "auto" }}>
+      <List
+        sx={{
+          flexGrow: 1,
+          overflow: "auto",
+          py: 0,
+        }}
+      >
         {rooms.map((room) => (
           <ListItem
             key={room.id}
             component="div"
             onClick={() => handleRoomClick(room.id)}
-            sx={{ borderBottom: 1, borderColor: "divider", cursor: "pointer" }}
+            sx={{
+              borderBottom: 1,
+              borderColor: "divider",
+              cursor: "pointer",
+              py: { xs: 1, sm: 1.5 },
+              "&:hover": {
+                bgcolor: "action.hover",
+              },
+            }}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ minWidth: { xs: 36, sm: 40 } }}>
               {room.isPrivate ? <LockIcon /> : <PublicIcon />}
             </ListItemIcon>
             <ListItemText
               primary={room.name}
               secondary={`Owner: ${room.owner.name}`}
+              primaryTypographyProps={{
+                sx: {
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
+                  fontWeight: 500,
+                },
+              }}
+              secondaryTypographyProps={{
+                sx: { fontSize: { xs: "0.75rem", sm: "0.875rem" } },
+              }}
             />
           </ListItem>
         ))}
       </List>
 
-      <Box sx={{ p: 2, borderTop: 1, borderColor: "divider" }}>
+      <Box
+        sx={{
+          p: { xs: 1, sm: 2 },
+          borderTop: 1,
+          borderColor: "divider",
+        }}
+      >
         <Fab
           color="primary"
-          size="medium"
+          size={isMobile ? "small" : "medium"}
           onClick={() => setShowNewRoomForm(true)}
           sx={{ width: "100%" }}
         >

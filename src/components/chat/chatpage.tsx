@@ -31,8 +31,24 @@ const ChatPage = () => {
   }
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-      <Box sx={{ width: 300, borderRight: 1, borderColor: "divider" }}>
+    <Box
+      sx={{
+        display: "flex",
+        height: "calc(100vh - 64px)",
+        overflow: "hidden",
+        flexDirection: { xs: "column", sm: "row" },
+      }}
+    >
+      <Box
+        sx={{
+          width: { xs: "100%", sm: 300 },
+          height: { xs: "auto", sm: "100%" },
+          borderRight: 1,
+          borderBottom: { xs: 1, sm: 0 },
+          borderColor: "divider",
+          maxHeight: { xs: "40vh", sm: "100vh" },
+        }}
+      >
         <ChatList
           currentUserId={currentUser.id}
           onSelectChatRoom={(chatRoomId: number) =>
@@ -40,7 +56,13 @@ const ChatPage = () => {
           }
         />
       </Box>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          height: { xs: "60vh", sm: "100%" },
+          overflow: "hidden",
+        }}
+      >
         {selectedChatRoomId ? (
           <ChatRoom
             roomId={selectedChatRoomId}

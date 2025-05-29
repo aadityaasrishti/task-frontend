@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { api, API_URL } from "../../utils/api";
+import { api } from "../../utils/api";
 import {
   Box,
   Paper,
@@ -126,7 +126,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        maxWidth: "100vw",
+        maxWidth: "100%",
+        overflow: "hidden",
       }}
     >
       <Box
@@ -134,6 +135,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
           flexGrow: 1,
           overflow: "auto",
           p: { xs: 1, sm: 2 },
+          "& > *:not(:last-child)": {
+            mb: { xs: 1.5, sm: 2 },
+          },
         }}
       >
         {messages.map((message) => {
@@ -152,7 +156,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
                   display: "flex",
                   flexDirection: isCurrentUser ? "row-reverse" : "row",
                   alignItems: "flex-start",
-                  maxWidth: { xs: "85%", sm: "70%" },
+                  maxWidth: { xs: "90%", sm: "70%" },
+                  gap: 1,
                 }}
               >
                 <Avatar
@@ -160,7 +165,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
                     width: { xs: 28, sm: 32 },
                     height: { xs: 28, sm: 32 },
                     bgcolor: isCurrentUser ? "primary.main" : "secondary.main",
-                    mx: { xs: 0.5, sm: 1 },
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
                   }}
                 >
                   {message.sender.name[0].toUpperCase()}
@@ -192,67 +197,12 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
                     <Typography
                       variant="body1"
                       sx={{
-                        fontSize: { xs: "0.9rem", sm: "1rem" },
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
                       }}
                     >
                       {message.content}
-                    </Typography>{" "}
-                    {message.attachmentUrl && (
-                      <Box sx={{ mt: 1 }}>
-                        {message.attachmentType?.startsWith("image/") ? (
-                          <Box
-                            component="img"
-                            src={`${API_URL}${message.attachmentUrl}`}
-                            sx={{
-                              maxWidth: "200px",
-                              maxHeight: "200px",
-                              borderRadius: 1,
-                              cursor: "pointer",
-                            }}
-                            onClick={() =>
-                              window.open(
-                                `${API_URL}${message.attachmentUrl}`,
-                                "_blank"
-                              )
-                            }
-                          />
-                        ) : (
-                          <Box
-                            component="a"
-                            href={`${API_URL}${message.attachmentUrl}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              color: "inherit",
-                              textDecoration: "none",
-                            }}
-                          >
-                            <AttachFileIcon sx={{ mr: 1 }} />
-                            <Typography variant="body2">
-                              Download Attachment
-                            </Typography>
-                          </Box>
-                        )}
-                      </Box>
-                    )}
+                    </Typography>
                   </Paper>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      display: "block",
-                      textAlign: isCurrentUser ? "right" : "left",
-                      mt: 0.5,
-                      color: "text.secondary",
-                      fontSize: { xs: "0.65rem", sm: "0.75rem" },
-                    }}
-                  >
-                    {new Date(message.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Typography>
                 </Box>
               </Box>
             </Box>
@@ -269,6 +219,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
           backgroundColor: "background.paper",
           display: "flex",
           gap: { xs: 0.5, sm: 1 },
+          borderTop: 1,
+          borderColor: "divider",
         }}
       >
         <input

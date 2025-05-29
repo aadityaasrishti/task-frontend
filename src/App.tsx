@@ -70,25 +70,75 @@ function App() {
       <BrowserRouter>
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Toolbar
+              sx={{
+                flexWrap: "wrap",
+                gap: { xs: 1, sm: 2 },
+                py: { xs: 1, sm: 0 },
+              }}
+            >
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{
+                  flexGrow: { xs: 1, sm: 1 },
+                  fontSize: { xs: "1.1rem", sm: "1.25rem" },
+                }}
+              >
                 Task Manager
               </Typography>
               {user && (
-                <>
-                  <Button color="inherit" component={Link} to="/dashboard">
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: { xs: 0.5, sm: 1 },
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <Button
+                    color="inherit"
+                    component={Link}
+                    to="/dashboard"
+                    sx={{
+                      minWidth: { xs: "auto", sm: 100 },
+                      px: { xs: 1, sm: 2 },
+                    }}
+                  >
                     Dashboard
                   </Button>
-                  <Button color="inherit" component={Link} to="/projects">
+                  <Button
+                    color="inherit"
+                    component={Link}
+                    to="/projects"
+                    sx={{
+                      minWidth: { xs: "auto", sm: 100 },
+                      px: { xs: 1, sm: 2 },
+                    }}
+                  >
                     Projects
                   </Button>
-                  <Button color="inherit" component={Link} to="/chat">
+                  <Button
+                    color="inherit"
+                    component={Link}
+                    to="/chat"
+                    sx={{
+                      minWidth: { xs: "auto", sm: 100 },
+                      px: { xs: 1, sm: 2 },
+                    }}
+                  >
                     Chat
                   </Button>
-                  <Button color="inherit" onClick={handleLogout}>
+                  <Button
+                    color="inherit"
+                    onClick={handleLogout}
+                    sx={{
+                      minWidth: { xs: "auto", sm: 100 },
+                      px: { xs: 1, sm: 2 },
+                    }}
+                  >
                     Logout
                   </Button>
-                </>
+                </Box>
               )}
             </Toolbar>
           </AppBar>
