@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { api, getAttachmentUrl } from "../../utils/api";
+import { api } from "../../utils/api";
+import AttachmentPreview from "./AttachmentPreview";
 import {
   Box,
   Paper,
@@ -200,54 +201,14 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
                         fontSize: { xs: "0.875rem", sm: "1rem" },
                       }}
                     >
+                      {" "}
                       {message.content}
                       {message.attachmentUrl && (
-                        <Box sx={{ mt: 1 }}>
-                          {message.attachmentType?.startsWith("image/") ? (
-                            <img
-                              src={getAttachmentUrl(
-                                message.attachmentUrl || ""
-                              )}
-                              alt="attachment"
-                              style={{
-                                maxWidth: "100%",
-                                maxHeight: 200,
-                                borderRadius: 4,
-                                cursor: "pointer",
-                              }}
-                              onClick={() =>
-                                window.open(
-                                  getAttachmentUrl(message.attachmentUrl || ""),
-                                  "_blank"
-                                )
-                              }
-                            />
-                          ) : (
-                            <Box
-                              component="a"
-                              href={getAttachmentUrl(
-                                message.attachmentUrl || ""
-                              )}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                                color: "inherit",
-                                textDecoration: "none",
-                                "&:hover": {
-                                  textDecoration: "underline",
-                                },
-                              }}
-                            >
-                              <AttachFileIcon sx={{ fontSize: "1.2rem" }} />
-                              <Typography variant="body2">
-                                Open Attachment
-                              </Typography>
-                            </Box>
-                          )}
-                        </Box>
+                        <AttachmentPreview
+                          attachmentUrl={message.attachmentUrl}
+                          attachmentType={message.attachmentType}
+                          isCurrentUser={isCurrentUser}
+                        />
                       )}
                     </Typography>
                   </Paper>
