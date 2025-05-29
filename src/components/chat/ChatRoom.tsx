@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { api } from "../../utils/api";
+import { api, getAttachmentUrl } from "../../utils/api";
 import {
   Box,
   Paper,
@@ -205,9 +205,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
                         <Box sx={{ mt: 1 }}>
                           {message.attachmentType?.startsWith("image/") ? (
                             <img
-                              src={`${import.meta.env.VITE_API_URL}${
-                                message.attachmentUrl
-                              }`}
+                              src={getAttachmentUrl(
+                                message.attachmentUrl || ""
+                              )}
                               alt="attachment"
                               style={{
                                 maxWidth: "100%",
@@ -217,9 +217,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
                               }}
                               onClick={() =>
                                 window.open(
-                                  `${import.meta.env.VITE_API_URL}${
-                                    message.attachmentUrl
-                                  }`,
+                                  getAttachmentUrl(message.attachmentUrl || ""),
                                   "_blank"
                                 )
                               }
@@ -227,9 +225,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
                           ) : (
                             <Box
                               component="a"
-                              href={`${import.meta.env.VITE_API_URL}${
-                                message.attachmentUrl
-                              }`}
+                              href={getAttachmentUrl(
+                                message.attachmentUrl || ""
+                              )}
                               target="_blank"
                               rel="noopener noreferrer"
                               sx={{

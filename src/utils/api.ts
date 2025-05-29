@@ -2,6 +2,14 @@ import axios from "axios";
 
 export const API_URL = import.meta.env.VITE_API_URL;
 
+export const getAttachmentUrl = (attachmentPath: string) => {
+  // Remove any leading /api from the attachment path
+  const cleanPath = attachmentPath.replace(/^\/api\//, "");
+  // Remove any leading slash from the API_URL to prevent double slashes
+  const baseUrl = API_URL.replace(/\/$/, "");
+  return `${baseUrl}/${cleanPath}`;
+};
+
 const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
