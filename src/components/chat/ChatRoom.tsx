@@ -112,17 +112,16 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
       alert("Speech recognition is not supported in your browser.");
       return;
     }
-
     const SpeechRecognition = window.webkitSpeechRecognition;
     recognitionRef.current = new SpeechRecognition();
-    recognitionRef.current.continuous = true;
-    recognitionRef.current.interimResults = true;
+    recognitionRef.current.continuous = false;
+    recognitionRef.current.interimResults = false;
 
     recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = Array.from(event.results)
-        .map((result) => result[0].transcript)
-        .join("");
-      setNewMessage(transcript);
+      if (event.results.length > 0) {
+        const transcript = event.results[0][0].transcript;
+        setNewMessage(transcript);
+      }
     };
 
     recognitionRef.current.onend = () => {
