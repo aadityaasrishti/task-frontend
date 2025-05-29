@@ -7,7 +7,9 @@ import {
   Container,
   Paper,
   Alert,
+  Link,
 } from "@mui/material";
+import { LockOutlined } from "@mui/icons-material";
 import { auth } from "../../utils/api";
 
 interface AuthFormProps {
@@ -57,86 +59,146 @@ export default function AuthForm({
 
   return (
     <Container component="main" maxWidth="xs">
-      <Paper
-        elevation={3}
+      <Box
         sx={{
-          p: 4,
+          minHeight: "100vh",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
-          mt: 8,
+          justifyContent: "center",
         }}
       >
-        <Typography component="h1" variant="h5">
-          {mode === "login" ? "Sign In" : "Create Account"}
-        </Typography>
+        <Paper
+          elevation={6}
+          sx={{
+            p: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+            backgroundColor: "rgba(255, 255, 255, 0.98)",
+            borderRadius: 2,
+          }}
+        >
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: "50%",
+              backgroundColor: "primary.main",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mb: 2,
+            }}
+          >
+            <LockOutlined sx={{ color: "white" }} />
+          </Box>
 
-        {error && (
-          <Alert severity="error" sx={{ width: "100%", mt: 2 }}>
-            {error}
-          </Alert>
-        )}
+          <Typography
+            component="h1"
+            variant="h5"
+            sx={{ mb: 3, fontWeight: 600 }}
+          >
+            {mode === "login" ? "Welcome Back" : "Create Account"}
+          </Typography>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          {mode === "register" && (
+          {error && (
+            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              width: "100%",
+            }}
+          >
+            {mode === "register" && (
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="name"
+                label="Name"
+                value={formData.name}
+                onChange={handleChange}
+                autoComplete="name"
+                variant="outlined"
+                sx={{ mb: 2 }}
+              />
+            )}
+
             <TextField
               margin="normal"
               required
               fullWidth
-              name="name"
-              label="Name"
-              value={formData.name}
+              name="email"
+              label="Email Address"
+              value={formData.email}
               onChange={handleChange}
-              autoComplete="name"
+              autoComplete="email"
+              variant="outlined"
+              sx={{ mb: 2 }}
             />
-          )}
 
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="email"
-            label="Email Address"
-            value={formData.email}
-            onChange={handleChange}
-            autoComplete="email"
-          />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              autoComplete={
+                mode === "login" ? "current-password" : "new-password"
+              }
+              variant="outlined"
+              sx={{ mb: 3 }}
+            />
 
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            autoComplete={
-              mode === "login" ? "current-password" : "new-password"
-            }
-          />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{
+                mt: 1,
+                mb: 3,
+                py: 1.5,
+                textTransform: "none",
+                fontSize: "1.1rem",
+                fontWeight: 500,
+                boxShadow: 2,
+                "&:hover": {
+                  boxShadow: 4,
+                },
+              }}
+            >
+              {mode === "login" ? "Sign In" : "Create Account"}
+            </Button>
 
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            {mode === "login" ? "Sign In" : "Create Account"}
-          </Button>
-
-          <Button
-            fullWidth
-            color="secondary"
-            onClick={onToggleMode}
-            sx={{ mt: 1 }}
-          >
-            {mode === "login"
-              ? "Don't have an account? Sign Up"
-              : "Already have an account? Sign In"}
-          </Button>
-        </Box>
-      </Paper>
+            <Box sx={{ textAlign: "center" }}>
+              <Link
+                component="button"
+                variant="body2"
+                onClick={onToggleMode}
+                sx={{
+                  textDecoration: "none",
+                  "&:hover": {
+                    textDecoration: "underline",
+                  },
+                }}
+              >
+                {mode === "login"
+                  ? "Don't have an account? Sign Up"
+                  : "Already have an account? Sign In"}
+              </Link>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
     </Container>
   );
 }
