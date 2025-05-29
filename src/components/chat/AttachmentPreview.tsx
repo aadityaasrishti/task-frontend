@@ -1,21 +1,29 @@
 import React from "react";
-import { Box, Typography, Paper } from "@mui/material";
+import { Box, Typography, Paper, IconButton } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import DescriptionIcon from "@mui/icons-material/Description";
+import CloseIcon from "@mui/icons-material/Close";
 import { getAttachmentUrl } from "../../utils/api";
 
 interface AttachmentPreviewProps {
-  attachmentUrl: string;
+  attachmentUrl?: string;
+  file?: File;
   attachmentType?: string;
-  isCurrentUser: boolean;
+  isCurrentUser?: boolean;
+  onRemove?: () => void;
 }
 
 const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
   attachmentUrl,
-  attachmentType = "",
+  file,
+  attachmentType: propAttachmentType,
   isCurrentUser,
+  onRemove,
 }) => {
+  const attachmentType = propAttachmentType || (file ? file.type : "");
+  const fileName = file ? file.name : attachmentUrl?.split("/").pop() || "";
+
   const getFileIcon = () => {
     if (attachmentType.startsWith("application/pdf")) {
       return <PictureAsPdfIcon sx={{ fontSize: "2rem" }} />;
@@ -25,9 +33,7 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
     }
     return <AttachFileIcon sx={{ fontSize: "2rem" }} />;
   };
-
-  const getFileExtension = (url: string) => {
-    const fileName = url.split("/").pop() || "";
+  const getFileExtension = () => {
     return fileName.split(".").pop()?.toUpperCase() || "FILE";
   };
 
@@ -45,7 +51,7 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
         }}
       >
         <img
-          src={getAttachmentUrl(attachmentUrl)}
+          src={getAttachmentUrl(attachmentUrl || "")}
           alt="attachment"
           style={{
             maxWidth: "100%",
@@ -53,7 +59,9 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
             borderRadius: 8,
             cursor: "pointer",
           }}
-          onClick={() => window.open(getAttachmentUrl(attachmentUrl), "_blank")}
+          onClick={() =>
+            window.open(getAttachmentUrl(attachmentUrl || ""), "_blank")
+          }
         />
         <Box
           className="hover-overlay"
@@ -87,7 +95,7 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
   return (
     <Paper
       component="a"
-      href={getAttachmentUrl(attachmentUrl)}
+      href={getAttachmentUrl(attachmentUrl || "")}
       target="_blank"
       rel="noopener noreferrer"
       sx={{
@@ -111,12 +119,24 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
       {getFileIcon()}
       <Box>
         <Typography variant="body2" sx={{ fontWeight: "medium" }}>
-          {getFileExtension(attachmentUrl)}
+          {" "}
+          {getFileExtension()}
         </Typography>
         <Typography variant="caption" sx={{ opacity: 0.8 }}>
           Click to open
         </Typography>
       </Box>
+      {onRemove && (
+        <IconButton
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          sx={{ ml: "auto" }}
+        >
+          <CloseIcon />
+        </IconButton>
+      )}
     </Paper>
   );
 };

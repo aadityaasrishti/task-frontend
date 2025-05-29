@@ -10,11 +10,11 @@ import {
   Avatar,
   Divider,
   CircularProgress,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import MicIcon from "@mui/icons-material/Mic";
+import StopIcon from "@mui/icons-material/Stop";
 
 interface Message {
   id: number;
@@ -33,15 +33,57 @@ interface ChatRoomProps {
   currentUserId: number;
 }
 
+// Define types for Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  readonly length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  readonly isFinal: boolean;
+  readonly length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  readonly transcript: string;
+  readonly confidence: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onerror: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onresult:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any)
+    | null;
+  start(): void;
+  stop(): void;
+}
+
+declare global {
+  interface Window {
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
+
 const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -64,6 +106,39 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
     const interval = setInterval(fetchMessages, 3000);
     return () => clearInterval(interval);
   }, [roomId]);
+
+  const startSpeechRecognition = () => {
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Speech recognition is not supported in your browser.");
+      return;
+    }
+
+    const SpeechRecognition = window.webkitSpeechRecognition;
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = true;
+    recognitionRef.current.interimResults = true;
+
+    recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0].transcript)
+        .join("");
+      setNewMessage(transcript);
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognitionRef.current.start();
+    setIsRecording(true);
+  };
+
+  const stopSpeechRecognition = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    }
+  };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -230,6 +305,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
           gap: { xs: 0.5, sm: 1 },
           borderTop: 1,
           borderColor: "divider",
+          alignItems: "center",
         }}
       >
         <input
@@ -238,50 +314,36 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
           onChange={handleFileSelect}
           style={{ display: "none" }}
         />
+        {selectedFile && (
+          <AttachmentPreview
+            file={selectedFile}
+            onRemove={() => setSelectedFile(null)}
+          />
+        )}
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Type a message..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          size="small"
+        />
         <IconButton
           onClick={() => fileInputRef.current?.click()}
-          sx={{
-            width: { xs: 36, sm: 40 },
-            height: { xs: 36, sm: 40 },
-          }}
+          color="primary"
+          size="small"
         >
           <AttachFileIcon />
         </IconButton>
-        <TextField
-          fullWidth
-          placeholder={
-            selectedFile ? `${selectedFile.name} selected` : "Type a message..."
-          }
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          variant="outlined"
-          size={isMobile ? "small" : "medium"}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 3,
-              fontSize: { xs: "0.875rem", sm: "1rem" },
-            },
-          }}
-        />
         <IconButton
-          type="submit"
-          color="primary"
-          disabled={!newMessage.trim() && !selectedFile}
-          sx={{
-            bgcolor: "primary.main",
-            color: "white",
-            width: { xs: 36, sm: 40 },
-            height: { xs: 36, sm: 40 },
-            "&:hover": {
-              bgcolor: "primary.dark",
-            },
-            "&.Mui-disabled": {
-              bgcolor: "action.disabledBackground",
-              color: "action.disabled",
-            },
-          }}
+          onClick={isRecording ? stopSpeechRecognition : startSpeechRecognition}
+          color={isRecording ? "error" : "primary"}
+          size="small"
         >
-          <SendIcon sx={{ fontSize: { xs: 20, sm: 24 } }} />
+          {isRecording ? <StopIcon /> : <MicIcon />}
+        </IconButton>
+        <IconButton type="submit" color="primary" size="small">
+          <SendIcon />
         </IconButton>
       </Box>
     </Box>
