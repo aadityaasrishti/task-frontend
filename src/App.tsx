@@ -84,7 +84,7 @@ function App() {
                 <AuthForm
                   mode="login"
                   onSuccess={handleAuthSuccess}
-                  onToggleMode={() => {}}
+                  onToggleMode={() => (window.location.href = "/register")}
                 />
               )
             }
@@ -98,7 +98,7 @@ function App() {
                 <AuthForm
                   mode="register"
                   onSuccess={handleAuthSuccess}
-                  onToggleMode={() => {}}
+                  onToggleMode={() => (window.location.href = "/login")}
                 />
               )
             }
