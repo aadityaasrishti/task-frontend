@@ -42,18 +42,21 @@ export default function AuthForm({
     setError("");
 
     try {
+      let data;
       if (mode === "register") {
-        const data = await auth.register(formData);
-        onSuccess(data);
+        data = await auth.register(formData);
       } else {
-        const data = await auth.login({
+        data = await auth.login({
           email: formData.email,
           password: formData.password,
         });
-        onSuccess(data);
       }
+      // Pass both user and token to onSuccess
+      onSuccess({ user: data.user, token: data.token });
     } catch (err: any) {
       setError(err.response?.data?.error || "Something went wrong");
+      // Clear any invalid token
+      localStorage.removeItem("token");
     }
   };
 

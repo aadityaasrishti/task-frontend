@@ -39,23 +39,32 @@ const theme = createTheme({
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setLoading(false);
+          return;
+        }
         const userData = await auth.getCurrentUser();
         setUser(userData);
       } catch (error) {
-        console.error("Not authenticated");
+        console.error("Authentication error:", error);
+        // Clear invalid token
+        localStorage.removeItem("token");
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (localStorage.getItem("token")) {
-      checkAuth();
-    }
+    checkAuth();
   }, []);
 
-  const handleAuthSuccess = (data: { user: User }) => {
+  const handleAuthSuccess = (data: { user: User; token: string }) => {
+    localStorage.setItem("token", data.token);
     setUser(data.user);
   };
 
@@ -63,6 +72,21 @@ function App() {
     auth.logout();
     setUser(null);
   };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        Loading...
+      </Box>
+    );
+  }
 
   return (
     <ThemeProvider theme={theme}>
