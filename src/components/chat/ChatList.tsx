@@ -59,6 +59,7 @@ const ChatList: React.FC<ChatListProps> = ({
   const [newRoomName, setNewRoomName] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [error, setError] = useState<string>("");
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -88,18 +89,28 @@ const ChatList: React.FC<ChatListProps> = ({
 
   const handleCreateRoom = async () => {
     try {
+      setError("");
+      if (!newRoomName.trim()) {
+        setError("Room name is required");
+        return;
+      }
+      if (selectedUsers.length === 0) {
+        setError("Please select at least one member");
+        return;
+      }
       await api.post("/chat/rooms", {
         name: newRoomName,
         isPrivate,
-        members: selectedUsers,
+        memberIds: selectedUsers,
       });
       setShowNewRoomForm(false);
       setNewRoomName("");
       setIsPrivate(false);
       setSelectedUsers([]);
       fetchRooms();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating room:", error);
+      setError(error.response?.data?.message || "Failed to create chat room");
     }
   };
 
@@ -220,6 +231,8 @@ const ChatList: React.FC<ChatListProps> = ({
               onChange={(e) => setNewRoomName(e.target.value)}
               variant="outlined"
               size={isMobile ? "small" : "medium"}
+              error={!!error}
+              helperText={error}
             />
             <FormControlLabel
               control={
