@@ -201,6 +201,56 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, currentUserId }) => {
                       }}
                     >
                       {message.content}
+                      {message.attachmentUrl && (
+                        <Box sx={{ mt: 1 }}>
+                          {message.attachmentType?.startsWith("image/") ? (
+                            <img
+                              src={`${import.meta.env.VITE_API_URL}${
+                                message.attachmentUrl
+                              }`}
+                              alt="attachment"
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: 200,
+                                borderRadius: 4,
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                window.open(
+                                  `${import.meta.env.VITE_API_URL}${
+                                    message.attachmentUrl
+                                  }`,
+                                  "_blank"
+                                )
+                              }
+                            />
+                          ) : (
+                            <Box
+                              component="a"
+                              href={`${import.meta.env.VITE_API_URL}${
+                                message.attachmentUrl
+                              }`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                color: "inherit",
+                                textDecoration: "none",
+                                "&:hover": {
+                                  textDecoration: "underline",
+                                },
+                              }}
+                            >
+                              <AttachFileIcon sx={{ fontSize: "1.2rem" }} />
+                              <Typography variant="body2">
+                                Open Attachment
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      )}
                     </Typography>
                   </Paper>
                 </Box>
